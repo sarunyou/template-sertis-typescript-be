@@ -1,0 +1,53 @@
+version: '3.8'
+services:
+  application:
+    build:
+      context: ./dockerfiles/application
+    image: messaging-service/application:latest
+    ports:
+      - 13000:8080
+    volumes:
+      - .:/home/node/
+    depends_on:
+      - platform-api
+      - ccm-api
+      - firebase
+    networks:
+      user_network:
+        aliases:
+          - application
+  platform-api:
+    image: thiht/smocker
+    ports:
+      - 8080
+    networks:
+      user_network:
+        aliases:
+          - platform-api
+  ccm-api:
+    image: thiht/smocker
+    ports:
+      - 8080
+    networks:
+      user_network:
+        aliases:
+          - ccm-api
+  firebase:
+    image: firebase-cloud
+    build:  
+      context: ./dockerfiles/firebase
+    volumes:
+      - ./dockerfiles/firebase:/app
+    ports:
+      - "9099:9099"
+      - "4000:4000"
+      - "8080:8080"
+    environment:
+      - FIRESTORE_EMULATOR_HOST=0.0.0.0:8080
+    networks:
+      user_network:
+networks:
+  user_network:
+    driver: bridge
+    external: false
+    attachable: true

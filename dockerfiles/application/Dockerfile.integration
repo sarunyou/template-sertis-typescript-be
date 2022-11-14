@@ -1,0 +1,7 @@
+FROM node:14-slim
+
+WORKDIR /home/node/
+
+COPY . /home/node/
+
+RUN  yarn install

@@ -1,0 +1,15 @@
+.idea/
+.vscode/
+.devcontainer
+node_modules/
+build/
+builds/
+dist/
+coverage/
+data/
+tmp/
+.env
+.DS_Store
+openapi.yml
+junit.xml
+dockerfiles/firebase
