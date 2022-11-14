@@ -2,19 +2,19 @@ variables:
   GCP_PROJECT_ID: sertis-7-11-chatbot-${ENV}
 
 include:
-  - project: "sertiscorp/devops/gitlab-ci-templates"
+  - project: 'sertiscorp/devops/gitlab-ci-templates'
     ref: master
     file:
-      - "base.yaml"
-      - "docker-build-gcp.yaml"
-      - "deploy-gcp-endpoint.yaml"
+      - 'base.yaml'
+      - 'docker-build-gcp.yaml'
+      - 'deploy-gcp-endpoint.yaml'
 
 .base-test:
   stage: test
   image: node:14-slim
   interruptible: true
   cache:
-    key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
+    key: '$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG'
     paths:
       - .yarn-cache/
   before_script:
@@ -46,33 +46,6 @@ Unit Test:
       coverage_report:
         coverage_format: cobertura
         path: coverage/clover.xml
-
-Integration Test:
-  variables:
-    DOCKER_HOST: tcp://docker:2375/
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ''
-  stage: test
-  image: docker/compose:1.29.2
-  services:
-    - docker:dind
-  before_script:
-    - docker version
-    - docker-compose version
-  script:
-    - docker-compose -f docker-compose.integration.yml build
-    - docker-compose -f docker-compose.integration.yml run --rm application yarn test:integration
-  coverage: '/All files\s*\|\s*(\d*.\d*|\d*)\s*\|\s*(\d*.\d*|\d*)\s*\|\s*(\d*.\d*|\d*)\s*\|\s*(\d*.\d*|\d*)\s*\|/'
-  rules:
-    - if: '($CI_MERGE_REQUEST_SOURCE_BRANCH_NAME != "master" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop") || $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
-      when: always
-      allow_failure: false
-    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^feature/ || $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^*fix/'
-      when: always
-      allow_failure: true
-
-
-
 
 Audit:
   tags:
